@@ -56,7 +56,7 @@ def main():
         pm2_run_script = " ".join( [  
             'pm2 start',
             'core_server/main.py',
-            '--interpreter python3.9',
+            '--interpreter python3',
             '-f',
             '--name {}'.format( get_proc_name_for_wallet(wallet) ),
             '--', 
