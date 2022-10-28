@@ -33,7 +33,7 @@ def main():
 
     # Create wallets
     wallets = []
-    for i in range(10):
+    for i in range(16):
         wallet_i = bittensor.wallet( path  = '/tmp/', name = coldkey, hotkey = hotkey_prefix + str(i) )
         wallet_i.create()
         wallets.append( wallet_i )
