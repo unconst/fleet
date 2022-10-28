@@ -46,8 +46,8 @@ def main():
             prompt = False,
             max_allowed_attempts = 3,
             output_in_place = True,
-            cuda = False,8
-            dev_id = 0,
+            cuda = True,
+            dev_id = [0,1,2,3,4,5,6,7],
             TPB = 256,
             num_processes = None,
             update_interval = None,
