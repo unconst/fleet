@@ -70,7 +70,8 @@ def main():
             '--subtensor.network {}'.format(subtensor.network),
             '--prometheus.level DEBUG'
         ])
-        print ( 'Running:', get_proc_name_for_wallet( wallet ))
+        print ( '\nScript:', pm2_run_script)
+        print ( '\nRunning:', get_proc_name_for_wallet( wallet ))
         subprocess.Popen(pm2_run_script.split(), stdout=subprocess.PIPE)
         if is_wallet_running(wallet):
             print ('Success')

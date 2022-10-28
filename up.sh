@@ -9,7 +9,7 @@ python3 -m pip install -e ~/.bittensor/bittensor
 
 # Next we will create our coldkey and 10 hotkeys
 sudo apt update
-sudo apt install nodejs
+sudo apt install npm
 
 # Now we will register them
-npm install pm2 -g
+sudo npm install pm2 -g
