@@ -5,9 +5,14 @@ import socket
 import json
 import os
 
-coldkey = 'testwallet'
-hotkey_prefix = 'test-'
-subtensor = bittensor.subtensor(network='nobunaga')
+parser = argparse.ArgumentParser(description='Miner Fleet Monit')
+parser.add_argument('-n', default = 4, dest="n", type=int, help='Number of Miners to monit')
+bittensor.wallet.add_args( parser = parser )
+bittensor.subtensor.add_args( parser = parser )
+config = bittensor.config( parser = parser )
+
+master_wallet = bittensor.wallet( config = config )
+subtensor = bittensor.subtensor(config = config)
 
 def get_proc_name_for_wallet(wallet) -> str:
     return "pC:" + str(wallet.name) + "_H:" + wallet.hotkey_str
@@ -33,14 +38,14 @@ def main():
 
     # Create wallets
     wallets = []
-    for i in range(16):
-        wallet_i = bittensor.wallet( path  = '/tmp/', name = coldkey, hotkey = hotkey_prefix + str(i) )
+    for i in range( config.n ):
+        wallet_i = bittensor.wallet( path  = master_wallet.path, name = master_wallet.name, hotkey = master_wallet.hotkey_str + '-' + str(i) )
         wallet_i.create()
         wallets.append( wallet_i )
 
-    for i, wallet in enumerate(wallets):
+    for i, sub_wallet in enumerate(wallets):
         subtensor.register (
-            wallet = wallet,
+            wallet = sub_wallet,
             wait_for_inclusion = False,
             wait_for_finalization = True,
             prompt = False,
@@ -58,28 +63,28 @@ def main():
             'core_server/main.py',
             '--interpreter python3',
             '-f',
-            '--name {}'.format( get_proc_name_for_wallet(wallet) ),
+            '--name {}'.format( get_proc_name_for_wallet(sub_wallet) ),
             '--', 
             '--logging.debug', 
             '--neuron.model_name EleutherAI/gpt-neo-1.3B',
             '--neuron.autocast',
-            '--wallet.name {}'.format(wallet.name),
-            '--wallet.hotkey {}'.format(wallet.hotkey_str),
+            '--wallet.name {}'.format(sub_wallet.name),
+            '--wallet.hotkey {}'.format(sub_wallet.hotkey_str),
             '--neuron.device cuda:{}'.format( i % 8 ),
             '--axon.port {}'.format(get_free_port()),
             '--subtensor.network {}'.format(subtensor.network),
             '--prometheus.level DEBUG'
         ])
         print ( '\nScript:', pm2_run_script)
-        print ( '\nRunning:', get_proc_name_for_wallet( wallet ))
+        print ( '\nRunning:', get_proc_name_for_wallet( sub_wallet ))
         subprocess.Popen(pm2_run_script.split(), stdout=subprocess.PIPE)
-        if is_wallet_running(wallet):
+        if is_wallet_running(sub_wallet):
             print ('Success')
         else:
             print ('Failed')
 
-    for w in wallets:
-        print ('Wallet:', w, 'Process:', get_proc_name_for_wallet( w ), ' Running:', is_wallet_running(w) )
+    for sub_wallet in wallets:
+        print ('Wallet:', sub_wallet, 'Process:', get_proc_name_for_wallet( sub_wallet ), ' Running:', is_wallet_running(sub_wallet) )
 
 
 
