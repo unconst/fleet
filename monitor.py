@@ -38,7 +38,7 @@ def main():
         wallet_i.create()
         wallets.append( wallet_i )
 
-    for wallet in wallets:
+    for i, wallet in enumerate(wallets):
         subtensor.register (
             wallet = wallet,
             wait_for_inclusion = False,
@@ -65,7 +65,7 @@ def main():
             '--neuron.autocast',
             '--wallet.name {}'.format(wallet.name),
             '--wallet.hotkey {}'.format(wallet.hotkey_str),
-            '--neuron.device cuda:0',
+            '--neuron.device cuda:{}'.format( i % 8 ),
             '--axon.port {}'.format(get_free_port()),
             '--subtensor.network {}'.format(subtensor.network),
             '--prometheus.level DEBUG'
