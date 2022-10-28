@@ -1,5 +1,6 @@
 import subprocess
 import bittensor
+import argparse
 import socket
 import json
 import os
@@ -37,25 +38,21 @@ def main():
         wallet_i.create()
         wallets.append( wallet_i )
 
-    for wallet in wallets[-2:]:
-        # subtensor.register (
-        #     wallet = wallet,
-        #     wait_for_inclusion = False,
-        #     wait_for_finalization = True,
-        #     prompt = False,
-        #     max_allowed_attempts = 3,
-        #     output_in_place = True,
-        #     cuda = False,8
-        #     dev_id = 0,
-        #     TPB = 256,
-        #     num_processes = None,
-        #     update_interval = None,
-        #     log_verbose = False,
-        # )
-        # try:
-        #     subprocess.Popen('pm2 delete {}'.format( get_proc_name_for_wallet(wallet) ).split(), stdout=subprocess.PIPE)
-        # except:
-        #     pass
+    for wallet in wallets:
+        subtensor.register (
+            wallet = wallet,
+            wait_for_inclusion = False,
+            wait_for_finalization = True,
+            prompt = False,
+            max_allowed_attempts = 3,
+            output_in_place = True,
+            cuda = False,8
+            dev_id = 0,
+            TPB = 256,
+            num_processes = None,
+            update_interval = None,
+            log_verbose = False,
+        )
         pm2_run_script = " ".join( [  
             'pm2 start',
             'core_server/main.py',
